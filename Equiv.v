@@ -775,7 +775,17 @@ Theorem CSeq_congruence : forall c1 c1' c2 c2',
   cequiv c1 c1' -> cequiv c2 c2' ->
   cequiv (c1;;c2) (c1';;c2').
 Proof. 
-  (* FILL IN HERE *) Admitted.
+  intros c1 c1' c2 c2' Heq1 Heq2.
+  split; intros.
+  Case " -> ".
+    remember (c1 ;; c2) as c12 eqn:HeqcSeq.
+    ceval_cases (induction H) SCase; inversion HeqcSeq; subst.
+    apply E_Seq with st'. apply Heq1 in H. apply H. apply Heq2 in H0. apply H0.
+  Case " <- ".
+    remember (c1' ;; c2') as c12 eqn:HeqcSeq.
+    ceval_cases (induction H) SCase; inversion HeqcSeq; subst.
+    apply E_Seq with st'. apply Heq1 in H. apply H. apply Heq2 in H0. apply H0.
+Qed.    
 (** [] *)
 
 (** **** Exercise: 3 stars (CIf_congruence)  *)
@@ -783,7 +793,27 @@ Theorem CIf_congruence : forall b b' c1 c1' c2 c2',
   bequiv b b' -> cequiv c1 c1' -> cequiv c2 c2' ->
   cequiv (IFB b THEN c1 ELSE c2 FI) (IFB b' THEN c1' ELSE c2' FI).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b b' c1 c1' c2 c2' HeqB HeqC1 HeqC2.
+  split; intros.
+  Case " -> ".
+    remember (IFB b THEN c1 ELSE c2 FI) as if12 eqn:HeqIF.
+    ceval_cases (induction H) SCase; inversion HeqIF; subst.
+    SCase "E_IfTrue".
+      apply E_IfTrue. rewrite HeqB in H. apply H.
+      unfold cequiv in HeqC1. apply HeqC1. apply H0.
+    SCase "E_IfFalse".
+      apply E_IfFalse. rewrite <- HeqB. apply H.
+      unfold cequiv in HeqC2. apply HeqC2. apply H0.
+  Case " <- ".
+    remember (IFB b' THEN c1' ELSE c2' FI) as if12 eqn:HeqIF.
+    ceval_cases (induction H) SCase; inversion HeqIF; subst.
+    SCase "E_IfTrue".
+      apply E_IfTrue. rewrite HeqB. apply H.
+      unfold cequiv in HeqC1. apply HeqC1. apply H0.
+    SCase "E_IfFalse".
+      apply E_IfFalse. rewrite HeqB. apply H.
+      unfold cequiv in HeqC2. apply HeqC2. apply H0.
+Qed.
 (** [] *)
 
 (** *** *)
